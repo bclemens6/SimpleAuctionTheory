@@ -1,0 +1,103 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 15 07:59:32 2024
+
+@author: benja
+"""
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#Set up counting variables
+Pot=100
+TeamAWins=0
+TeamABids=0
+TeamBWins=0
+TeamBBids=0
+TeamCWins=0
+TeamCBids=0
+TeamAValue=0
+TeamBValue=0
+TeamCValue=0
+BargainCounter=0
+TeamABargain=0
+TeamBBargain=0
+TeamCBargain=0
+
+
+#Set up an iterative loop to run the following simulation 1,000,000 times
+for i in range (1000000):
+    #Creates a randomly distributed estimate for each team's model valuation of the pot, then creates bids based
+    #on those values
+    TeamAValue=Pot+np.random.normal()*15
+    TeamBValue=Pot+np.random.normal()*15
+    TeamCValue=Pot+np.random.normal()*15
+    TeamA=TeamAValue*1
+    TeamB=TeamBValue*1
+    TeamC=TeamCValue*1
+    
+    #Determine which bid is highest, or which two if they are tied. Then add to the relevant counters.
+    if TeamA>max(TeamB,TeamC):
+        TeamAWins+=1
+        TeamABids+=TeamA
+        if TeamA<=100:
+            TeamABargain+=1
+    elif TeamB>max(TeamA,TeamC):
+        TeamBWins+=1
+        TeamBBids+=TeamB
+        if TeamB<=100:
+            TeamBBargain+=1
+    elif TeamC>max(TeamA,TeamB):
+        TeamCWins+=1
+        TeamCBids+=TeamC
+        if TeamC<=100:
+            TeamCBargain+=1
+    elif TeamA==TeamB:
+        TeamAWins+=.5
+        TeamBWins+=.5
+        TeamABids+=TeamA/2
+        TeamBBids+=TeamB/2
+        if TeamA<=100:
+            TeamABargain+=.5
+            TeamBBargain+=.5
+    elif TeamA==TeamC:
+        TeamAWins+=.5
+        TeamCWins+=.5
+        TeamABids+=TeamA/2
+        TeamCBids+=TeamC/2
+        if TeamA<=100:
+            TeamABargain+=.5
+            TeamBBargain+=.5
+    elif TeamB==TeamC:
+        TeamBWins+=.5
+        TeamCWins+=.5
+        TeamBBids+=TeamB/2
+        TeamCBids+=TeamC/2
+        if TeamB<=100:
+            TeamBBargain+=.5
+            TeamCBargain+=.5
+    if max(TeamA,TeamB,TeamC)<100:
+        BargainCounter+=1
+        
+#Calculate aggregates
+TeamAWinRate=round(TeamAWins/1000000,3)
+TeamAValue=round(TeamABids/(100*TeamAWins),3)
+TeamBWinRate=round(TeamBWins/1000000,3)
+TeamBValue=round(TeamBBids/(100*TeamBWins),3)
+TeamCWinRate=round(TeamCWins/1000000,3)
+TeamCValue=round(TeamCBids/(100*TeamCWins),3)
+FinalBargain=round(BargainCounter/1000000,3)
+ABargain=round(TeamABargain/TeamAWins,3)
+BBargain=round(TeamBBargain/TeamBWins,3)
+CBargain=round(TeamCBargain/TeamCWins,3)
+
+#Print results
+print("Team A Win Odds are "+str(TeamAWinRate))
+print("Team B Win Odds are "+str(TeamBWinRate))
+print("Team C Win Odds are "+str(TeamCWinRate))
+print("Team A CostPaid is "+str(TeamAValue))
+print("Team B CostPaid is "+str(TeamBValue))
+print("Team C CostPaid is "+str(TeamCValue))
+print("Bargain Counter is "+str(FinalBargain))
+print("Bargain hit rate is, respectively, "+str(ABargain)+" "+str(BBargain)+" "+str(CBargain))
